@@ -62,7 +62,6 @@ public class Util {
         alert.show();
     }
 
-
     public static AlertDialog createSettingsDialog(final Activity orLabActivity, final WebView orView) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(orLabActivity);
         final String defaultValue = sharedPreferences.getString("prefUrl", "https://lab.open-roberta.org");

@@ -1,4 +1,4 @@
-package de.fhg.iais.roberta.robot.wedo;
+package de.fhg.iais.roberta.robot.ble;
 
 import android.Manifest;
 import android.annotation.TargetApi;

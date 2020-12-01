@@ -5,7 +5,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import de.fhg.iais.roberta.robot.wedo.RobotCommunicatorInterface;
+import de.fhg.iais.roberta.robot.ble.RobotCommunicatorInterface;
 
 public class RobotCommunicator implements RobotCommunicatorInterface {
     public String ROBOT = "OpenRoberta";

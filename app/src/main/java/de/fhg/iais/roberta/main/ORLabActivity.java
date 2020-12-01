@@ -39,7 +39,8 @@ import java.io.PrintWriter;
 import java.net.URLDecoder;
 
 import de.fhg.iais.roberta.robot.RobotCommunicator;
-import de.fhg.iais.roberta.robot.wedo.WeDoCommunicator;
+import de.fhg.iais.roberta.robot.ble.WeDoCommunicator;
+import de.fhg.iais.roberta.robot.ble.MataDevCommunicator;
 
 /**
  * <h1>Open Roberta Mobile</h1>
@@ -233,6 +234,10 @@ public class ORLabActivity extends Activity {
             switch (robot) {
                 case "wedo":
                     this.robotCommunicator = new WeDoCommunicator(this, this.orView);
+                    //TODO inform webview
+                    break;
+                case "matatabot":
+                    this.robotCommunicator = new MataDevCommunicator(this, this.orView);
                     //TODO inform webview
                     break;
                 default:

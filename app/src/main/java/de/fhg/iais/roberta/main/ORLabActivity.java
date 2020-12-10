@@ -40,7 +40,7 @@ import java.net.URLDecoder;
 
 import de.fhg.iais.roberta.robot.RobotCommunicator;
 import de.fhg.iais.roberta.robot.ble.WeDoCommunicator;
-import de.fhg.iais.roberta.robot.ble.MataDevCommunicator;
+import de.fhg.iais.roberta.robot.ble.matatabot.MataDevCommunicator;
 
 /**
  * <h1>Open Roberta Mobile</h1>
@@ -231,6 +231,7 @@ public class ORLabActivity extends Activity {
         try {
             this.robotCommunicator.close();
             String robot = msg.getString("robot");
+            Log.d(TAG, "switch robot:" + robot);
             switch (robot) {
                 case "wedo":
                     this.robotCommunicator = new WeDoCommunicator(this, this.orView);

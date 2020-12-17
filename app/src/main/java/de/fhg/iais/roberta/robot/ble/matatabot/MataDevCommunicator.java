@@ -273,26 +273,44 @@ public class MataDevCommunicator extends RobotCommunicator {
         }, 2, 5);
     }
 
-    private void bleMotionForwardStep (int device_id, int step) {
+    private void bleMotionForwardStep (int device_id, String steps) {
         final int[] count = {0};
+        int step = 1;
+        if (steps.equals("STEP1")) {
+            step = 1;
+        } else if (steps.equals("STEP2")) {
+            step = 2;
+        } else if (steps.equals("STEP3")) {
+            step = 3;
+        } else if (steps.equals("STEP4")) {
+            step = 4;
+        } else if (steps.equals("STEP5")) {
+            step = 5;
+        } else if (steps.equals("STEP6")) {
+            step = 6;
+        }
         final int timeout = 2000 * step;
         final int[] movePosCount = {step};
         CommandProcess.motionForwardStepFlag = true;
         bleHalWrite(device_id, CommandPack.motionForwardStep());
         movePosCount[0] = movePosCount[0] - 1;
+        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (count[0] > timeout) {
-                    Log.d(TAG, "motionForwardStep timeout!");
                     CommandProcess.motionForwardStepFlag = false;
+                    reportStateChanged("commandResponse", "motionForwardStep", (String)deviceMapTemp.get("mac"), "brickname", "timeOut");
+                    Log.d(TAG, "motionForwardStep timeout!");
                     timer.cancel();
                 } else if (!CommandProcess.motionForwardStepFlag) {
                     if (movePosCount[0] > 0) {
-                        CommandProcess.motionForwardStepFlag = true;
                         bleHalWrite(device_id  , CommandPack.motionForwardStep());
                         movePosCount[0] = movePosCount[0] - 1;
+                        CommandProcess.motionForwardStepFlag = true;
                     } else {
+                        reportStateChanged("commandResponse", "motionForwardStep", (String)deviceMapTemp.get("mac"), "brickname", "done");
+                        Log.d(TAG, "motionForwardStep done");
                         timer.cancel();
                     }
                 }
@@ -816,6 +834,13 @@ public class MataDevCommunicator extends RobotCommunicator {
                     case "command":
                         switch (msg.getString("actuator")) {
                             case "motor":
+                                switch (msg.getString("action")) {
+                                    case "motionForwardStep":
+                                        bleMotionForwardStep(0, msg.getString("step"));
+                                        break;
+                                    default:
+                                        break;
+                                }
                                 break;
                             case "piezo":
                                 break;
@@ -963,8 +988,13 @@ public class MataDevCommunicator extends RobotCommunicator {
                         newMsg.put(strg[i], strg[i + 1]);
                     }
                 }
-                mainView.loadUrl("javascript:webviewController.appToJsInterface('" + newMsg.toString() + "')");
                 Log.d(TAG, newMsg.toString());
+                this.mainView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainView.loadUrl("javascript:webviewController.appToJsInterface('" + newMsg.toString() + "')");
+                    }
+                });
             } else {
                 throw new IllegalArgumentException("Min. 3 parameters required + additional parameters in pairs!");
             }
@@ -984,7 +1014,6 @@ public class MataDevCommunicator extends RobotCommunicator {
                 @Override
                 public void run() {
                     mainView.loadUrl("javascript:webviewController.appToJsInterface('" + newMsg.toString() + "')");
-
                 }
             });
             Log.e(TAG, newMsg.toString());

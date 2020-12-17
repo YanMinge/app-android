@@ -132,12 +132,66 @@ public class CommandProcess {
         for (int i = 1; i < _receivedCommandLength; i++) {
             crc_data_temp.add(_receivedCommand.get(i));
         }
-        Log.d(TAG, "crc_data_temp:" + DataProcess.byteList2hex(crc_data_temp));
+//        Log.d(TAG, "crc_data_temp:" + DataProcess.byteList2hex(crc_data_temp));
         int crc_calculation = crc16(crc_data_temp, 0xffff);
         int crc_received = (_receivedCommand.get(_receivedCommandLength) << 8) & 0xff00 | (_receivedCommand.get(_receivedCommandLength + 1) & 0xff);
-        Log.d(TAG, "crc_calculation:" + crc_calculation);
-        Log.d(TAG, "crc_received:" + crc_received);
+//        Log.d(TAG, "crc_calculation:" + crc_calculation);
+//        Log.d(TAG, "crc_received:" + crc_received);
         return crc_calculation == crc_received;
+    }
+
+    private static void clearCommandSyncFlag() {
+        if (CommandProcess.motionForwardStepFlag) {
+            CommandProcess.motionForwardStepFlag = false;
+        }
+        if (CommandProcess.motionBackwardStepFlag) {
+            CommandProcess.motionBackwardStepFlag = false;
+        }
+        if (CommandProcess.motionTurnLeftAngleFlag) {
+            CommandProcess.motionTurnLeftAngleFlag = false;
+        }
+        if (CommandProcess.motionTurnRightAngleFlag) {
+            CommandProcess.motionTurnRightAngleFlag = false;
+        }
+        if (CommandProcess.motionMovingFlag) {
+            CommandProcess.motionMovingFlag = false;
+        }
+        if (CommandProcess.motionWhirlFlag) {
+            CommandProcess.motionWhirlFlag = false;
+        }
+        if (CommandProcess.motionSingleWheelSpeedFlag) {
+            CommandProcess.motionSingleWheelSpeedFlag = false;
+        }
+        if (CommandProcess.motionAllWheelSpeedFlag) {
+            CommandProcess.motionAllWheelSpeedFlag = false;
+        }
+        if (CommandProcess.motionStopMovingFlag) {
+            CommandProcess.motionStopMovingFlag = false;
+        }
+        if (CommandProcess.doDanceFlag) {
+            CommandProcess.doDanceFlag = false;
+        }
+        if (CommandProcess.doActionFlag) {
+            CommandProcess.doActionFlag = false;
+        }
+        if (CommandProcess.soundAltoFlag) {
+            CommandProcess.soundAltoFlag = false;
+        }
+        if (CommandProcess.soundTrebleFlag) {
+            CommandProcess.soundTrebleFlag = false;
+        }
+        if (CommandProcess.soundMelodyFlag) {
+            CommandProcess.soundMelodyFlag = false;
+        }
+        if (CommandProcess.soundSongFlag) {
+            CommandProcess.soundSongFlag = false;
+        }
+        if (CommandProcess.eyeLedSingleSetFlag) {
+            CommandProcess.eyeLedSingleSetFlag = false;
+        }
+        if (CommandProcess.eyeLedAllOffFlag) {
+            CommandProcess.eyeLedAllOffFlag = false;
+        }
     }
 
     public static void parseCommand() {
@@ -167,6 +221,7 @@ public class CommandProcess {
             }
             case BLECommand.CMD_GENERAL_RSP: {
                 Log.d(TAG, "get general response!");
+                clearCommandSyncFlag();
                 break;
             }
             case BLECommand.CMD_CHECK_VERSION: {
@@ -185,7 +240,7 @@ public class CommandProcess {
                 } else if (deviceName.equals("MatataCon")) {
                     deviceName = "MatataAll";
                 }
-                Log.d(TAG, "CMD_HEARTBEAT:" + deviceName);
+//                Log.d(TAG, "CMD_HEARTBEAT:" + deviceName);
                 break;
             }
             default: {

@@ -365,8 +365,35 @@ public class MataDevCommunicator extends RobotCommunicator {
         }, 2, 5);
     }
 
-    private void bleMotionTurnLeftAngle (int device_id, int moveAngle) {
+    private void bleMotionTurnLeftAngle (int device_id, String angle) {
         final int[] count = {0};
+        int moveAngle = 90;
+        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
+        if (angle.equals("ANGLE30")) {
+            moveAngle = 30;
+        } else if (angle.equals("ANGLE36")) {
+            moveAngle = 36;
+        } else if (angle.equals("ANGLE45")) {
+            moveAngle = 45;
+        } else if (angle.equals("ANGLE60")) {
+            moveAngle = 60;
+        } else if (angle.equals("ANGLE72")) {
+            moveAngle = 72;
+        } else if (angle.equals("ANGLE90")) {
+            moveAngle = 90;
+        } else if (angle.equals("ANGLE108")) {
+            moveAngle = 108;
+        } else if (angle.equals("ANGLE120")) {
+            moveAngle = 120;
+        } else if (angle.equals("ANGLE135")) {
+            moveAngle = 135;
+        } else if (angle.equals("ANGLE144")) {
+            moveAngle = 144;
+        } else if (angle.equals("ANGLE150")) {
+            moveAngle = 150;
+        } else if (angle.equals("ANGLE180")) {
+            moveAngle = 180;
+        }
         CommandProcess.motionTurnLeftAngleFlag = true;
         bleHalWrite(device_id, CommandPack.motionTurnLeftAngle(moveAngle));
         Timer timer = new Timer();
@@ -380,11 +407,13 @@ public class MataDevCommunicator extends RobotCommunicator {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (count[0] > finalTimeout) {
-                    Log.d(TAG, "motionTurnLeftAngle timeout!");
                     CommandProcess.motionTurnLeftAngleFlag = false;
+                    reportStateChanged("commandResponse", "motionTurnLeftAngle", (String)deviceMapTemp.get("mac"), "brickname", "timeOut");
+                    Log.d(TAG, "motionTurnLeftAngle timeout!");
                     timer.cancel();
                 } else if (!CommandProcess.motionTurnLeftAngleFlag) {
-                    Log.d(TAG, "motionTurnLeftAngle success!");
+                    reportStateChanged("commandResponse", "motionTurnLeftAngle", (String)deviceMapTemp.get("mac"), "brickname", "done");
+                    Log.d(TAG, "motionTurnLeftAngle done");
                     timer.cancel();
                 }
                 count[0] += 5;
@@ -392,8 +421,35 @@ public class MataDevCommunicator extends RobotCommunicator {
         }, 2, 5);
     }
 
-    private void bleMotionTurnRightAngle (int device_id, int moveAngle) {
+    private void bleMotionTurnRightAngle (int device_id, String angle) {
         final int[] count = {0};
+        int moveAngle = 90;
+        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
+        if (angle.equals("ANGLE30")) {
+            moveAngle = 30;
+        } else if (angle.equals("ANGLE36")) {
+            moveAngle = 36;
+        } else if (angle.equals("ANGLE45")) {
+            moveAngle = 45;
+        } else if (angle.equals("ANGLE60")) {
+            moveAngle = 60;
+        } else if (angle.equals("ANGLE72")) {
+            moveAngle = 72;
+        } else if (angle.equals("ANGLE90")) {
+            moveAngle = 90;
+        } else if (angle.equals("ANGLE108")) {
+            moveAngle = 108;
+        } else if (angle.equals("ANGLE120")) {
+            moveAngle = 120;
+        } else if (angle.equals("ANGLE135")) {
+            moveAngle = 135;
+        } else if (angle.equals("ANGLE144")) {
+            moveAngle = 144;
+        } else if (angle.equals("ANGLE150")) {
+            moveAngle = 150;
+        } else if (angle.equals("ANGLE180")) {
+            moveAngle = 180;
+        }
         CommandProcess.motionTurnRightAngleFlag = true;
         bleHalWrite(device_id, CommandPack.motionTurnRightAngle(moveAngle));
         Timer timer = new Timer();
@@ -407,11 +463,13 @@ public class MataDevCommunicator extends RobotCommunicator {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (count[0] > finalTimeout) {
-                    Log.d(TAG, "motionTurnRightAngle timeout!");
                     CommandProcess.motionTurnRightAngleFlag = false;
+                    reportStateChanged("commandResponse", "motionTurnRightAngle", (String)deviceMapTemp.get("mac"), "brickname", "timeOut");
+                    Log.d(TAG, "motionTurnRightAngle timeout!");
                     timer.cancel();
                 } else if (!CommandProcess.motionTurnRightAngleFlag) {
-                    Log.d(TAG, "motionTurnRightAngle success!");
+                    reportStateChanged("commandResponse", "motionTurnRightAngle", (String)deviceMapTemp.get("mac"), "brickname", "timeOut");
+                    Log.d(TAG, "motionTurnRightAngle done!");
                     timer.cancel();
                 }
                 count[0] += 5;
@@ -438,7 +496,6 @@ public class MataDevCommunicator extends RobotCommunicator {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (count[0] > finalTimeout) {
-                    Log.d(TAG, "motionMoving timeout!");
                     CommandProcess.motionMovingFlag = false;
                     timer.cancel();
                 } else if (!CommandProcess.motionMovingFlag) {
@@ -858,6 +915,12 @@ public class MataDevCommunicator extends RobotCommunicator {
                                         break;
                                     case "motionBackwardStep":
                                         bleMotionBackwardStep(0, msg.getString("step"));
+                                        break;
+                                    case "motionTurnLeftAngle":
+                                        bleMotionTurnLeftAngle(0, msg.getString("angle"));
+                                        break;
+                                    case "motionTurnRightAngle":
+                                        bleMotionTurnRightAngle(0, msg.getString("angle"));
                                         break;
                                     default:
                                         break;

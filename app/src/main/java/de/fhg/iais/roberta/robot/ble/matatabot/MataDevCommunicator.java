@@ -291,10 +291,10 @@ public class MataDevCommunicator extends RobotCommunicator {
         }
         final int timeout = 2000 * step;
         final int[] movePosCount = {step};
+        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
         CommandProcess.motionForwardStepFlag = true;
         bleHalWrite(device_id, CommandPack.motionForwardStep());
         movePosCount[0] = movePosCount[0] - 1;
-        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
@@ -319,10 +319,25 @@ public class MataDevCommunicator extends RobotCommunicator {
         }, 2, 5);
     }
 
-    private void bleMotionBackwardStep (int device_id, int step) {
+    private void bleMotionBackwardStep (int device_id, String steps) {
         final int[] count = {0};
+        int step = 1;
+        if (steps.equals("STEP1")) {
+            step = 1;
+        } else if (steps.equals("STEP2")) {
+            step = 2;
+        } else if (steps.equals("STEP3")) {
+            step = 3;
+        } else if (steps.equals("STEP4")) {
+            step = 4;
+        } else if (steps.equals("STEP5")) {
+            step = 5;
+        } else if (steps.equals("STEP6")) {
+            step = 6;
+        }
         final int timeout = 2000 * step;
         final int[] movePosCount = {step};
+        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
         CommandProcess.motionBackwardStepFlag = true;
         bleHalWrite(device_id, CommandPack.motionBackwardStep());
         movePosCount[0] = movePosCount[0] - 1;
@@ -330,8 +345,9 @@ public class MataDevCommunicator extends RobotCommunicator {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (count[0] > timeout) {
-                    Log.d(TAG, "motionBackwardStep timeout!");
                     CommandProcess.motionBackwardStepFlag = false;
+                    reportStateChanged("commandResponse", "motionBackwardStep", (String)deviceMapTemp.get("mac"), "brickname", "timeOut");
+                    Log.d(TAG, "motionBackwardStep timeout!");
                     timer.cancel();
                 } else if (!CommandProcess.motionBackwardStepFlag) {
                     if (movePosCount[0] > 0) {
@@ -339,6 +355,8 @@ public class MataDevCommunicator extends RobotCommunicator {
                         bleHalWrite(device_id  , CommandPack.motionBackwardStep());
                         movePosCount[0] = movePosCount[0] - 1;
                     } else {
+                        reportStateChanged("commandResponse", "motionBackwardStep", (String)deviceMapTemp.get("mac"), "brickname", "done");
+                        Log.d(TAG, "motionBackwardStep done");
                         timer.cancel();
                     }
                 }
@@ -837,6 +855,9 @@ public class MataDevCommunicator extends RobotCommunicator {
                                 switch (msg.getString("action")) {
                                     case "motionForwardStep":
                                         bleMotionForwardStep(0, msg.getString("step"));
+                                        break;
+                                    case "motionBackwardStep":
+                                        bleMotionBackwardStep(0, msg.getString("step"));
                                         break;
                                     default:
                                         break;

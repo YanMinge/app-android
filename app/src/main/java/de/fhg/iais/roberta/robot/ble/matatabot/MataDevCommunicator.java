@@ -477,8 +477,10 @@ public class MataDevCommunicator extends RobotCommunicator {
         }, 2, 5);
     }
 
-    private void bleMotionMoving (int device_id, int movePos) {
+    private void bleMotionMoving (int device_id, double Pos) {
         final int[] count = {0};
+        int movePos = (int) Pos * 10;   //turn to mm
+        final Map<String,Object> deviceMapTemp = connectedDevices.get(device_id);
         CommandProcess.motionMovingFlag = true;
         int movePosTemp = movePos;
         if (movePosTemp < -1000) {
@@ -497,9 +499,12 @@ public class MataDevCommunicator extends RobotCommunicator {
             public void run() {
                 if (count[0] > finalTimeout) {
                     CommandProcess.motionMovingFlag = false;
+                    reportStateChanged("commandResponse", "motionMoving", (String)deviceMapTemp.get("mac"), "brickname", "timeOut");
+                    Log.d(TAG, "motionMoving timeout!");
                     timer.cancel();
                 } else if (!CommandProcess.motionMovingFlag) {
-                    Log.d(TAG, "motionMoving success!");
+                    reportStateChanged("commandResponse", "motionMoving", (String)deviceMapTemp.get("mac"), "brickname", "done");
+                    Log.d(TAG, "motionMoving done!");
                     timer.cancel();
                 }
                 count[0] += 5;
@@ -921,6 +926,9 @@ public class MataDevCommunicator extends RobotCommunicator {
                                         break;
                                     case "motionTurnRightAngle":
                                         bleMotionTurnRightAngle(0, msg.getString("angle"));
+                                        break;
+                                    case "motionMoving":
+                                        bleMotionMoving(0, msg.getDouble("position"));
                                         break;
                                     default:
                                         break;
